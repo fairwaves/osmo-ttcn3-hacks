@@ -5,16 +5,11 @@ OSMOGITHUB:=https://github.com/osmocom
 OSMOGIT:=git://git.osmocom.org
 
 ECLIPSEGIT_REPOS= titan.Libraries.TCCUsefulFunctions \
-			titan.ProtocolModules.IP \
-			titan.ProtocolModules.TCP \
-			titan.ProtocolModules.UDP \
 			titan.ProtocolModules.RTP \
 			titan.TestPorts.Common_Components.Socket-API \
 			titan.TestPorts.IPL4asp \
 			titan.TestPorts.SIPmsg \
-			titan.TestPorts.TCPasp \
 			titan.TestPorts.TELNETasp \
-			titan.TestPorts.UDPasp \
 			titan.TestPorts.UNIX_DOMAIN_SOCKETasp
 
 ECLIPSEGIT2_REPOS= titan.ProtocolModules.ROSE \
@@ -29,20 +24,15 @@ ALL_REPOS=$(ECLIPSEGIT_REPOS) $(ECLIPSEGIT2_REPOS) $(OSMOGIT_REPOS)
 # In order to keep local changes in the repository of a dependency, set its commit to the
 # name of a local branch here (e.g. 'master').
 titan.Libraries.TCCUsefulFunctions_commit=	R.30.A
-titan.ProtocolModules.IP_commit=		R.10.B-1-g99d0ec9
 titan.ProtocolModules.MAP_commit=		R.2.A-1-g79c6a3d
 titan.ProtocolModules.MobileL3_v13.4.0_commit=	R.2.A
 titan.ProtocolModules.RTP_commit=		R.5.A
 titan.ProtocolModules.ROSE_commit=		R.1.C
 titan.ProtocolModules.SDP_commit=		R.14.A
-titan.ProtocolModules.TCP_commit=		R.3.A
-titan.ProtocolModules.UDP_commit=		R.4.A
 titan.TestPorts.Common_Components.Socket-API_commit=	R.6.A
 titan.TestPorts.IPL4asp_commit=			R.29.A
 titan.TestPorts.SIPmsg_commit=			R.15.A-1-ge4f9dd0
-titan.TestPorts.TCPasp_commit=			R.9.A
 titan.TestPorts.TELNETasp_commit=		R.9.A
-titan.TestPorts.UDPasp_commit=			R.8.A
 titan.TestPorts.UNIX_DOMAIN_SOCKETasp_commit=	R.2.A-4-gbacd73d
 
 all: $(foreach dir,$(ALL_REPOS),$(dir)/update)
