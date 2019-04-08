@@ -397,16 +397,19 @@ template PDU_IPA_CCM ts_IPA_ID_GET := {
 private function f_ccm_rx_client(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 	select (ccm.msg_type) {
 		case (IPAC_MSGT_PING) {
+		    log("f_ccm_rx_client IPAC_MSGT_PING", ccm);
 			f_ccm_tx(valueof(ts_IPA_PONG));
 		}
 		case (IPAC_MSGT_ID_ACK) {
+		    log("f_ccm_rx_client IPAC_MSGT_ID_ACK", ccm);
 			f_send_IPA_EVT(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_ID_ACK));
 		}
 		case (IPAC_MSGT_ID_GET) {
+		    log("f_ccm_rx_client IPAC_MSGT_ID_GET", ccm);
 			f_ccm_tx(f_ccm_make_id_resp(ccm));
 		}
 		case else {
-			log("Unknown/unsupported IPA CCM message type", ccm);
+			log("f_ccm_rx_client Unknown/unsupported IPA CCM message type", ccm);
 		}
 	}
 }
@@ -414,6 +417,7 @@ private function f_ccm_rx_client(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 private function f_ccm_rx_server(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 	select (ccm.msg_type) {
 		case (IPAC_MSGT_PING) {
+		    log("f_ccm_rx_server IPAC_MSGT_PING", ccm);
 			f_ccm_tx(valueof(ts_IPA_PONG));
 		}
 		case (IPAC_MSGT_ID_ACK) {
@@ -422,15 +426,17 @@ private function f_ccm_rx_server(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 			 * the TCP connection is established.  Other implementations may differ.
 			 * We currently ignore it completely - but actually we should make sure that
 			 * one ID_ACK is received by the server at some point */
+			log("f_ccm_rx_server IPAC_MSGT_ID_ACK", ccm);
 			f_send_IPA_EVT(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_ID_ACK));
 		}
 		case (IPAC_MSGT_ID_RESP) {
+		    log("f_ccm_rx_server IPAC_MSGT_ID_RESP", ccm);
 			log("IPA ID RESP: ", ccm.u.resp);
 			/* acknowledge any identity that the client may have sent */
 			f_ccm_tx(valueof(ts_IPA_ACK));
 		}
 		case else {
-			log("Unknown/unsupported IPA CCM message type", ccm);
+			log("f_ccm_rx_server Unknown/unsupported IPA CCM message type", ccm);
 		}
 	}
 }
