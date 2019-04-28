@@ -114,47 +114,30 @@ function f_init_gsup(charstring id, boolean legacy) runs on test_CT {
 	ccm_pars.ser_nr := "MSC-00-00-00-00-00-00";
 
 	vc_IPA := IPA_Emulation_CT.create(id & "-IPA");
-	log("legacy= ", legacy);
-	if (not legacy) {
-		log("in not legacy case 1");
-		vc_GSUP := GSUP_Emulation_CT.create(id);
-	}
+	vc_GSUP := GSUP_Emulation_CT.create(id);
 
 	map(vc_IPA:IPA_PORT, system:IPA_CODEC_PT);
-	if (not legacy) {
-		log("in not legacy case 2");
-		connect(vc_GSUP:GSUP, vc_IPA:IPA_GSUP_PORT);
-		connect(vc_IPA:IPA_CTRL_PORT, self:GSUP_IPA_EVENT);
-		vc_GSUP.start(GSUP_Emulation.main(ops, id));
-	} else {
-		connect(vc_IPA:IPA_GSUP_PORT, self:GSUP);
-	}
+	connect(vc_GSUP:GSUP, vc_IPA:IPA_GSUP_PORT);
+	connect(vc_IPA:IPA_CTRL_PORT, self:GSUP_IPA_EVENT);
+	vc_GSUP.start(GSUP_Emulation.main(ops, id));
 	vc_IPA.start(IPA_Emulation.main_client(mp_hlr_ip, mp_hlr_gsup_port, "", -1, ccm_pars));
 
-    log("vc_IPA: ", vc_IPA);
-	/* wait for incoming connection to GSUP port before proceeding */
+  log("vc_IPA: ", vc_IPA);
+  GSUP_IPA_EVENT.receive(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_UP));
+	/* wait for incoming connection to GSUP port before proceeding
 	timer T := 10.0;
 	T.start;
 	alt {
 		[not legacy] GSUP_IPA_EVENT.receive(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_UP)) { }
-		[legacy] GSUP.receive(ASP_IPA_Event:{up_down := ASP_IPA_EVENT_UP}) { }
 		[] T.timeout {
 			setverdict(fail, "No connection to GSUP Port");
-			mtc.stop;
+			GSUP_IPA_EVENT.receive(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_UP));
 		}
-	}
+	}*/
 }
 
 function f_init(boolean legacy := true) runs on test_CT {
-
-	/* activate default guard timer to ensure all tests eventually terminate */
-	g_Tguard.start;
-	activate(as_Tguard());
-
 	f_init_gsup("HLR_Test", legacy);
-	f_init_vty();
-
-	f_ipa_ctrl_start(mp_hlr_ip, mp_hlr_ctrl_port);
 }
 
 function f_start_handler(void_fn fn, HLR_ConnHdlrPars pars) runs on test_CT return HLR_ConnHdlr {

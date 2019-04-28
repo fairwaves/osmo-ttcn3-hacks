@@ -68,8 +68,8 @@ module Osmocom_VTY_Functions {
 				}
 			}
 			[] T.timeout {
-				setverdict(fail, "VTY Timeout for prompt");
-				mtc.stop;
+				//setverdict(fail, "VTY Timeout for prompt");
+				//mtc.stop;
 				};
 		}
 		T.stop;

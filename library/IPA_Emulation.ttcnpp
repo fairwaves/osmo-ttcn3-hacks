@@ -315,55 +315,12 @@ private function f_send_IPA_EVT(template ASP_IPA_Event evt) runs on IPA_Emulatio
 
 /* build IPA CCM ID RESP response from IPA CCM GET */
 private function f_ccm_make_id_resp(PDU_IPA_CCM get) runs on IPA_Emulation_CT return PDU_IPA_CCM {
-	var integer i;
 	var PDU_IPA_CCM resp := {
 		msg_type := IPAC_MSGT_ID_RESP,
 		u := {
 			resp := {}
 		}
-	}
-
-	for (i := 0; i < sizeof(get.u.get); i := i + 1) {
-		var IpaCcmIdTag tag := get.u.get[i].tag;
-		var charstring foo;
-		select (tag) {
-			case (IPAC_IDTAG_SERNR) {
-				foo := g_ccm_pars.ser_nr;
-			}
-			case (IPAC_IDTAG_UNITNAME) {
-				foo := g_ccm_pars.name;
-			}
-			case (IPAC_IDTAG_LOCATION1) {
-				foo := g_ccm_pars.location1;
-			}
-			case (IPAC_IDTAG_LOCATION2) {
-				foo := g_ccm_pars.location2;
-			}
-			case (IPAC_IDTAG_EQUIPVERS) {
-				foo := g_ccm_pars.equip_version;
-			}
-			case (IPAC_IDTAG_SWVERSION) {
-				foo := g_ccm_pars.sw_version;
-			}
-			case (IPAC_IDTAG_IPADDR) {
-				foo := g_ccm_pars.ip_addr;
-			}
-			case (IPAC_IDTAG_MACADDR) {
-				foo := g_ccm_pars.mac_addr;
-			}
-			case (IPAC_IDTAG_UNIT) {
-				foo := g_ccm_pars.unit_id;
-			}
-			case (IPAC_IDTAG_OSMO_RAND) {
-				foo := g_ccm_pars.osmo_rand;
-			}
-			case else {
-				foo := "unknown";
-			}
-		}
-		resp.u.resp[sizeof(resp.u.resp)] := valueof(t_IdRespPart(tag, foo));
-	}
-
+	};
 	return resp;
 }
 
@@ -397,15 +354,12 @@ template PDU_IPA_CCM ts_IPA_ID_GET := {
 private function f_ccm_rx_client(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 	select (ccm.msg_type) {
 		case (IPAC_MSGT_PING) {
-		    log("f_ccm_rx_client IPAC_MSGT_PING", ccm);
 			f_ccm_tx(valueof(ts_IPA_PONG));
 		}
 		case (IPAC_MSGT_ID_ACK) {
-		    log("f_ccm_rx_client IPAC_MSGT_ID_ACK", ccm);
 			f_send_IPA_EVT(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_ID_ACK));
 		}
 		case (IPAC_MSGT_ID_GET) {
-		    log("f_ccm_rx_client IPAC_MSGT_ID_GET", ccm);
 			f_ccm_tx(f_ccm_make_id_resp(ccm));
 		}
 		case else {
@@ -417,7 +371,6 @@ private function f_ccm_rx_client(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 private function f_ccm_rx_server(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 	select (ccm.msg_type) {
 		case (IPAC_MSGT_PING) {
-		    log("f_ccm_rx_server IPAC_MSGT_PING", ccm);
 			f_ccm_tx(valueof(ts_IPA_PONG));
 		}
 		case (IPAC_MSGT_ID_ACK) {
@@ -426,11 +379,9 @@ private function f_ccm_rx_server(PDU_IPA_CCM ccm) runs on IPA_Emulation_CT {
 			 * the TCP connection is established.  Other implementations may differ.
 			 * We currently ignore it completely - but actually we should make sure that
 			 * one ID_ACK is received by the server at some point */
-			log("f_ccm_rx_server IPAC_MSGT_ID_ACK", ccm);
 			f_send_IPA_EVT(t_ASP_IPA_EVT_UD(ASP_IPA_EVENT_ID_ACK));
 		}
 		case (IPAC_MSGT_ID_RESP) {
-		    log("f_ccm_rx_server IPAC_MSGT_ID_RESP", ccm);
 			log("IPA ID RESP: ", ccm.u.resp);
 			/* acknowledge any identity that the client may have sent */
 			f_ccm_tx(valueof(ts_IPA_ACK));
