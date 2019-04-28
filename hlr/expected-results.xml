@@ -1,21 +1,4 @@
 <?xml version="1.0"?>
 <testsuite name='Titan' tests='18' failures='0' errors='0' skipped='0' inconc='0' time='MASKED'>
   <testcase classname='HLR_Tests' name='TC_gsup_sai_err_invalid_imsi' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_sai' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_ul_unknown_imsi' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_sai_err_unknown_imsi' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_ul' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_vty' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_vty_msisdn_isd' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_purge_cs' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_purge_ps' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_gsup_purge_unknown' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_unknown' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_euse_disc' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_iuse_imsi' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_iuse_msisdn' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_euse' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_euse_continue' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_ussd_euse_defaultroute' time='MASKED'/>
-  <testcase classname='HLR_Tests' name='TC_mo_sss_reject' time='MASKED'/>
 </testsuite>
