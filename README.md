@@ -5,7 +5,6 @@ To start your osmo-ttcn tests:
 #### First console
 * git clone https://github.com/fairwaves/gsup-sip-translation-agent.git
 * git checkout develop
-* make deps
 * make compile
 * make run
 
@@ -19,4 +18,4 @@ To start your osmo-ttcn tests:
 * ./regen_makefile.sh
 * make compile
 * make -j5
-* ../start-testsuite.sh HLR_Tests HLR_Tests.cfg
+* sudo ../start-testsuite.sh HLR_Tests HLR_Tests.cfg
