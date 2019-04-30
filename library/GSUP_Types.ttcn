@@ -354,6 +354,13 @@ template GSUP_PDU ts_GSUP(GSUP_MessageType msgt, GSUP_IEs ies := {}) := {
 template (value) GSUP_PDU ts_GSUP_SAI_REQ(hexstring imsi) :=
 	ts_GSUP(OSMO_GSUP_MSGT_SEND_AUTH_INFO_REQUEST, { valueof(ts_GSUP_IE_IMSI(imsi)) });
 
+template (value) GSUP_PDU ts_GSUP_SAI_REQ_FULL(hexstring imsi, hexstring msisdn, GSUP_CnDomain cn_domain) :=
+	ts_GSUP(OSMO_GSUP_MSGT_SEND_AUTH_INFO_REQUEST, {
+	  valueof(ts_GSUP_IE_IMSI(imsi)),
+	  valueof(ts_GSUP_IE_MSISDN(msisdn)),
+	  valueof(ts_GSUP_IE_CnDomain(cn_domain))
+	});
+
 template GSUP_PDU tr_GSUP_SAI_REQ(template hexstring imsi) :=
 	tr_GSUP_IMSI(OSMO_GSUP_MSGT_SEND_AUTH_INFO_REQUEST, imsi);
 

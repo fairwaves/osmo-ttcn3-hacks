@@ -38,23 +38,10 @@ modulepar {
 	integer mp_hlr_ctrl_port := 4259;
 };
 
-type record HlrSubscrAud2G {
-	charstring algo,
-	OCT16 ki
-}
-
-type record HlrSubscrAud3G {
-	charstring algo,
-	OCT16 k,
-	OCT16 op,
-	boolean op_is_opc
-}
-
 type record HlrSubscriber {
 	hexstring imsi,
 	hexstring msisdn,
-	HlrSubscrAud2G aud2g optional,
-	HlrSubscrAud3G aud3g optional
+	GSUP_CnDomain cn_domain optional
 }
 
 type record of HlrSubscriber HlrSubscriberList;
@@ -66,22 +53,27 @@ type component HLR_ConnHdlr extends GSUP_ConnHdlr {
 }
 
 type record HLR_ConnHdlrPars {
-	HlrSubscriber sub,
-	HLR_ConnHdlrParsUssd ussd optional
+	HlrSubscriber sub
 }
 
 type record HLR_ConnHdlrParsUssd {
 	OCT4 sid
 }
 
-template (value) HLR_ConnHdlrPars t_Pars(hexstring imsi, hexstring msisdn := ''H) := {
+template (value) HLR_ConnHdlrPars t_Pars_err(hexstring imsi, hexstring msisdn := ''H) := {
 	sub := {
 		imsi := imsi,
 		msisdn := msisdn,
-		aud2g := omit,
-		aud3g := omit
-	},
-	ussd := omit
+		cn_domain := omit
+	}
+}
+
+template (value) HLR_ConnHdlrPars t_Pars_success(hexstring imsi, hexstring msisdn) := {
+	sub := {
+		imsi := imsi,
+		msisdn := msisdn,
+		cn_domain := OSMO_GSUP_CN_DOMAIN_CS
+	}
 }
 
 type function void_fn() runs on HLR_ConnHdlr;
@@ -184,7 +176,6 @@ runs on HLR_ConnHdlr return GSUP_PDU {
 		exp_fail := true;
 	}
 
-	GSUP.send(valueof(ts_GSUP_SAI_REQ(imsi)));
 	T.start;
 	alt {
 	[exp_fail] GSUP.receive(tr_GSUP_SAI_ERR(imsi, exp_err_cause)) -> value ret {
@@ -219,21 +210,37 @@ runs on HLR_ConnHdlr return GSUP_PDU {
  * than 5 digits is impossible. Even 5 digits is still questionable */
 private function f_TC_gsup_sai_err_invalid_imsi() runs on HLR_ConnHdlr {
 	var GSUP_PDU res;
-	log("res: ", res);
+	GSUP.send(valueof(ts_GSUP_SAI_REQ(g_pars.sub.imsi)));
 	res := f_perform_SAI(g_pars.sub.imsi, 96); /* Invalid Mandatory information */
 	setverdict(pass);
 }
 testcase TC_gsup_sai_err_invalid_imsi() runs on test_CT {
 	var HLR_ConnHdlr vc_conn;
-	var HLR_ConnHdlrPars pars := valueof(t_Pars('0123'H));
+	var HLR_ConnHdlrPars pars := valueof(t_Pars_err('0123'H));
 	log("pars: ", pars);
 	f_init(false);
 	vc_conn := f_start_handler(refers(f_TC_gsup_sai_err_invalid_imsi), pars);
 	vc_conn.done;
 }
 
+private function f_TC_gsup_sai_err_unknown_imsi() runs on HLR_ConnHdlr {
+	var GSUP_PDU res;
+	GSUP.send(valueof(ts_GSUP_SAI_REQ_FULL(g_pars.sub.imsi, g_pars.sub.msisdn, g_pars.sub.cn_domain)));
+	res := f_perform_SAI(g_pars.sub.imsi, 2);
+	setverdict(pass);
+}
+testcase TC_gsup_sai_err_unknown_imsi() runs on test_CT {
+	var HLR_ConnHdlr vc_conn;
+	var HLR_ConnHdlrPars pars := valueof(t_Pars_success(f_rnd_imsi('26242'H), '49161'H & f_rnd_hexstring(7, 9)));
+	log("pars: ", pars);
+	f_init(false);
+	vc_conn := f_start_handler(refers(f_TC_gsup_sai_err_unknown_imsi), pars);
+	vc_conn.done;
+}
+
 control {
 	execute( TC_gsup_sai_err_invalid_imsi() );
+	execute( TC_gsup_sai_err_unknown_imsi() );
 };
 
 };
